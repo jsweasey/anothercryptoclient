@@ -37,6 +37,7 @@ class MainApp():
         currentPortfolio.createCoinHoldingsTable()
         currentPortfolio.pack(side = 'bottom')
         currentPortfolio.saveCoinHoldingsTable()
+        currentPortfolio.updateCoinHoldingTableEntry('bitcoin', 'amount', 1)
 
     def btcPriceSec(self):
         currentBtcPriceUSDJSON =  api_service.coingeckoApiGet('/simple/price', 'JSON', {'ids':'bitcoin','vs_currencies':'usd'})
@@ -63,27 +64,27 @@ class MainApp():
         self.frameApiConnectCheck.after(5000, self.apiCheckSec)
 
 
-
 class CoinHoldingsTable(tk.Frame):
 
     def __init__(self):
         super(CoinHoldingsTable, self).__init__()
         self.frameUserCoinHoldings = tk.Frame(self, borderwidth = 2, relief = 'sunken')
+        self.arrHeadingTableLabel = []
         self.arrTableLabel = []
         self.arrTableData = []
 
     def createCoinHoldingsTableHeadings(self):
 
-        columnInsert = 0
         with open('test.json','r') as jsonToOpen:
             userCoinHoldingsJSON = json.load(jsonToOpen)
 
         coinHoldingsKeys = userCoinHoldingsJSON[0].keys()
         listCoinHoldingsKeys = list(coinHoldingsKeys)
         for key in range(len(listCoinHoldingsKeys)):
+            print(key)
             self.headingTableLabel = tk.Label(self, text = listCoinHoldingsKeys[key])
-            self.headingTableLabel.grid(row = 0, column = columnInsert, padx = 1, pady = 1)
-            columnInsert += 1
+            self.headingTableLabel.grid(row = 0, column = key, padx = 1, pady = 1)
+            self.arrHeadingTableLabel.append(listCoinHoldingsKeys[key])
 
     def createCoinHoldingsTable(self):
 
@@ -111,7 +112,7 @@ class CoinHoldingsTable(tk.Frame):
     def saveCoinHoldingsTable(self):
 
         fileToWriteTo = 'test.json'
-        if print(os.path.isfile(fileToWriteTo)) == True:
+        if os.path.isfile(fileToWriteTo) == True:
             with open('test.json', 'w') as jsonToWrite:
                 json.dump(self.arrTableData, jsonToWrite)
 
@@ -119,11 +120,25 @@ class CoinHoldingsTable(tk.Frame):
             with open('test.json', 'w+') as jsonToWrite:
                 json.dump(self.arrTableData, jsonToWrite)
 
+    def updateCoinHoldingTableEntry(self, coinToUpdate, fieldToUpdate, updatedData):
 
+        cTU = coinToUpdate
+        fTU = fieldToUpdate
+        uD = updatedData
 
+        for i in range(len(self.arrTableData)):
+            if self.arrTableData[i]['name'] == cTU:
+                self.arrTableData[i].update({fTU : uD})
+                break
 
+        for j in range(len(self.arrTableLabel[i])):
+            if self.arrHeadingTableLabel[j] == fTU:
+                labelToUpdate = self.arrTableLabel[i][j]
+                labelToUpdate.configure(text = uD)
+                print(labelToUpdate)
+                break
 
-
+        self.saveCoinHoldingsTable()
 
 
 def main():
