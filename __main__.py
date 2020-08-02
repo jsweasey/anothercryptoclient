@@ -114,11 +114,11 @@ class CoinHoldingsTable(tk.Frame):
 
         fileToWriteTo = 'test.json'
         if os.path.isfile(fileToWriteTo) == True:
-            with open('test.json', 'w') as jsonToWrite:
+            with open(fileToWriteTo, 'w') as jsonToWrite:
                 json.dump(self.arrTableData, jsonToWrite)
 
         else:
-            with open('test.json', 'w+') as jsonToWrite:
+            with open(fileToWriteTo, 'w+') as jsonToWrite:
                 json.dump(self.arrTableData, jsonToWrite)
 
     def updateCoinHoldingTableEntry(self, coinToUpdate, fieldToUpdate, updatedData, toSave):
