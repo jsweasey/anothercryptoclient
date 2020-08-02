@@ -37,7 +37,8 @@ class MainApp():
         currentPortfolio.createCoinHoldingsTable()
         currentPortfolio.pack(side = 'bottom')
         currentPortfolio.saveCoinHoldingsTable()
-        currentPortfolio.updateCoinHoldingTableEntry('bitcoin', 'amount', 1)
+        currentPortfolio.updateCoinHoldingTableCurrentPrices('coingecko')
+        #currentPortfolio.updateCoinHoldingTableEntry('bitcoin', 'amount', 1)
 
     def btcPriceSec(self):
         currentBtcPriceUSDJSON =  api_service.coingeckoApiGet('/simple/price', 'JSON', {'ids':'bitcoin','vs_currencies':'usd'})
@@ -120,7 +121,7 @@ class CoinHoldingsTable(tk.Frame):
             with open('test.json', 'w+') as jsonToWrite:
                 json.dump(self.arrTableData, jsonToWrite)
 
-    def updateCoinHoldingTableEntry(self, coinToUpdate, fieldToUpdate, updatedData):
+    def updateCoinHoldingTableEntry(self, coinToUpdate, fieldToUpdate, updatedData, toSave):
 
         cTU = coinToUpdate
         fTU = fieldToUpdate
@@ -135,10 +136,23 @@ class CoinHoldingsTable(tk.Frame):
             if self.arrHeadingTableLabel[j] == fTU:
                 labelToUpdate = self.arrTableLabel[i][j]
                 labelToUpdate.configure(text = uD)
-                print(labelToUpdate)
                 break
 
-        self.saveCoinHoldingsTable()
+        if toSave == True:
+            self.saveCoinHoldingsTable()
+
+    def updateCoinHoldingTableCurrentPrices(self, apiToUse):
+
+        if apiToUse == 'coingecko':
+            for i in range(len(self.arrTableData)):
+                cTU = self.arrTableData[i]['name']
+                uDJSON = api_service.coingeckoApiGet('/simple/price', 'JSON', {'ids':cTU,'vs_currencies':'usd'})
+                print(uDJSON)
+                uD = uDJSON[cTU]['usd']
+                self.updateCoinHoldingTableEntry(cTU, 'mostRecentPrice', uD, False)
+                self.updateCoinHoldingTableEntry(cTU, 'mostRecentTime', datetime.now().strftime('%H:%M:%S'), False)
+
+            self.saveCoinHoldingsTable()
 
 
 def main():
