@@ -1,9 +1,10 @@
 import json as json
-import requests
+import requests as requests
 import api_service as api_service
 import data_service as data_service
 import tkinter as tk
 import time as time
+import os as os
 from datetime import datetime as datetime
 
 
@@ -50,11 +51,13 @@ class MainApp():
 
         if binanceApiResponse[0] == True:
             self.labelbinanceApiCheck.configure(text = 'Binance API: Okay')
+
         else:
             self.labelbinanceApiCheck.configure(text = 'Binance API: Error ' + str(binanceApiResponse[1]))
 
         if coingeckoApiResponse[0] == True:
             self.labelcoingeckoApiCheck.configure(text = 'Coingecko API: Okay')
+
         else:
             self.labelcoingeckoApiCheck.configure(text = 'Coingecko API: Error' + str(coingeckoApiResponse[1]))
         self.frameApiConnectCheck.after(5000, self.apiCheckSec)
@@ -67,12 +70,12 @@ class CoinHoldingsTable(tk.Frame):
         super(CoinHoldingsTable, self).__init__()
         self.frameUserCoinHoldings = tk.Frame(self, borderwidth = 2, relief = 'sunken')
         self.arrTableLabel = []
-        self.arrTableData = {}
+        self.arrTableData = []
 
     def createCoinHoldingsTableHeadings(self):
 
         columnInsert = 0
-        with open('userholdings.json','r') as jsonToOpen:
+        with open('test.json','r') as jsonToOpen:
             userCoinHoldingsJSON = json.load(jsonToOpen)
 
         coinHoldingsKeys = userCoinHoldingsJSON[0].keys()
@@ -86,7 +89,7 @@ class CoinHoldingsTable(tk.Frame):
 
         rowInsert = 1
         columnInsert = 0
-        with open('userholdings.json','r') as jsonToOpen:
+        with open('test.json','r') as jsonToOpen:
             userCoinHoldingsJSON = json.load(jsonToOpen)
 
         for coinIndex in (userCoinHoldingsJSON):
@@ -102,19 +105,22 @@ class CoinHoldingsTable(tk.Frame):
                 currentRowData.update({currentRowKeysList[columnInsert] : coinData})
                 columnInsert += 1
             self.arrTableLabel.append(currentRowLabel)
-            self.arrTableData.update(currentRowData)
+            self.arrTableData.append(currentRowData)
             rowInsert += 1
 
     def saveCoinHoldingsTable(self):
 
-        labelToChange = self.arrTableLabel[1][1]
-        labelToChange.configure(text='egg')
-        jsonArrTableData = json.dumps(self.arrTableData)
-        print((jsonArrTableData))
-        print('\n')
-        with open('userholdings.json','r') as jsonToOpen:
-            userCoinHoldingsJSON = json.load(jsonToOpen)
-        print(userCoinHoldingsJSON)
+        fileToWriteTo = 'test.json'
+        if print(os.path.isfile(fileToWriteTo)) == True:
+            with open('test.json', 'w') as jsonToWrite:
+                json.dump(self.arrTableData, jsonToWrite)
+
+        else:
+            with open('test.json', 'w+') as jsonToWrite:
+                json.dump(self.arrTableData, jsonToWrite)
+
+
+
 
 
 

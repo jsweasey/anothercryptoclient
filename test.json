@@ -1,0 +1,42 @@
+[
+  {
+    "name": "bitcoin",
+    "ticker": "btc",
+    "amount": "0.1",
+    "boughtAtPrice": "10000",
+    "boughtAtTime": "25/06/2020 18:44:34",
+    "currencyBoughtIn": "usd",
+    "mostRecentPrice": "10678.33",
+    "mostRecentTime": "31/07/2020 09:34:32"
+  },
+  {
+    "name": "ethereum",
+    "ticker": "eth",
+    "amount": "0.5",
+    "boughtAtPrice": "1000",
+    "boughtAtTime": "25/06/2020 18:44:34",
+    "currencyBoughtIn": "usd",
+    "mostRecentPrice": "1678.33",
+    "mostRecentTime": "31/07/2020 09:34:32"
+  },
+  {
+    "name": "monero",
+    "ticker": "xmr",
+    "amount": "2",
+    "boughtAtPrice": "70",
+    "boughtAtTime": "25/06/2020 18:44:34",
+    "currencyBoughtIn": "usd",
+    "mostRecentPrice": "75",
+    "mostRecentTime": "31/07/2020 09:34:32"
+  },
+  {
+    "name": "iota",
+    "ticker": "miota",
+    "amount": "10",
+    "boughtAtPrice": "0.1",
+    "boughtAtTime": "25/06/2020 18:44:34",
+    "currencyBoughtIn": "usd",
+    "mostRecentPrice": "0.2",
+    "mostRecentTime": "31/07/2020 09:34:32"
+  }
+]
