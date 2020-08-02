@@ -18,10 +18,10 @@ def binanceApiCheck():
     except:
         return False, 0
 
-def binanceApiGet(endpoint, returnType, params):
+def binanceApiGet(endpoint, returnType, *params):
     try:
         binanceApiGetAddress = (binanceApiAddress + endpoint)
-        binanceGetResponse = requests.get(binanceApiGetAddress, params)
+        binanceGetResponse = requests.get(binanceApiGetAddress, *params)
         if returnType == 'RESPONSE':
             return binanceGetResponse
         elif returnType == 'JSON':
@@ -44,10 +44,10 @@ def coingeckoApiCheck():
     except:
         return False, 0
 
-def coingeckoApiGet(endpoint, returnType, params):
+def coingeckoApiGet(endpoint, returnType, *params):
     try:
         coingeckoApiGetAddress = (coingeckoApiAddress + endpoint)
-        coingeckoGetResponse = requests.get(coingeckoApiGetAddress, params)
+        coingeckoGetResponse = requests.get(coingeckoApiGetAddress, *params)
         if returnType == 'RESPONSE':
             return coingeckoGetResponse
         elif returnType == 'JSON':
