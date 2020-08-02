@@ -142,13 +142,16 @@ class CoinHoldingsTable(tk.Frame):
             self.saveCoinHoldingsTable()
 
     def updateCoinHoldingTableCurrentPrices(self, apiToUse):
-
+        coinsToCheck = []
+        for i in range(len(self.arrTableData)):
+            coinsToCheck.append(self.arrTableData[i]['name'])
+        coinsToSend = ','.join(coinsToCheck)
         if apiToUse == 'coingecko':
+            uDJSON = api_service.coingeckoApiGet('/simple/price', 'JSON', {'ids':coinsToSend,'vs_currencies':'usd'})
             for i in range(len(self.arrTableData)):
                 cTU = self.arrTableData[i]['name']
-                uDJSON = api_service.coingeckoApiGet('/simple/price', 'JSON', {'ids':cTU,'vs_currencies':'usd'})
-                print(uDJSON)
-                uD = uDJSON[cTU]['usd']
+                uDDict = uDJSON.get(cTU)
+                uD = uDDict['usd']
                 self.updateCoinHoldingTableEntry(cTU, 'mostRecentPrice', uD, False)
                 self.updateCoinHoldingTableEntry(cTU, 'mostRecentTime', datetime.now().strftime('%H:%M:%S'), False)
 
