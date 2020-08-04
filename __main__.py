@@ -35,7 +35,6 @@ class MainApp():
         self.btcPriceSec()
         self.apiCheckSec()
         self.currentPortfolio = CoinHoldingsTable(self.frameCoinHoldings)
-        self.currentPortfolio.pack()
 
     def btcPriceSec(self):
         currentBtcPriceUSDJSON =  api_service.coingeckoApiGet('/simple/price', 'JSON', {'ids':'bitcoin','vs_currencies':'usd'})
@@ -73,8 +72,9 @@ class CoinHoldingsTable(tk.Frame):
         self.arrTableData = []
         self.currentTableDisplayed = 'test.json'
 
-        self.frameUserCoinHoldingsTable = tk.Frame(self.master, borderwidth = 2, relief = 'sunken', bg = 'blue')
+        self.frameUserCoinHoldingsTable = tk.Frame(self.master, borderwidth = 2, relief = 'sunken')
         self.labelCurrentTableDisplayed = tk.Label(self.master, borderwidth = 2, relief = 'sunken')
+        self.buttonUpdateTablePrices = tk.Button(self.master, borderwidth = 2)
 
         self.labelCurrentTableDisplayed.configure(text = self.currentTableDisplayed)
 
@@ -82,9 +82,9 @@ class CoinHoldingsTable(tk.Frame):
         self.createCoinHoldingsTable()
         self.updateCoinHoldingTableCurrentPrices('coingecko')
 
-        self.labelCurrentTableDisplayed.pack()
-        self.frameUserCoinHoldingsTable.pack()
-        self.pack()
+        self.labelCurrentTableDisplayed.grid(row = 0, column = 0)
+        self.buttonUpdateTablePrices.grid(row = 0, column = 1)
+        self.frameUserCoinHoldingsTable.grid(row = 1, column = 0, columnspan = 2)
 
     def createCoinHoldingsTableHeadings(self):
 
@@ -94,7 +94,7 @@ class CoinHoldingsTable(tk.Frame):
         coinHoldingsKeys = userCoinHoldingsJSON[0].keys()
         listCoinHoldingsKeys = list(coinHoldingsKeys)
         for key in range(len(listCoinHoldingsKeys)):
-            self.headingTableLabel = tk.Label(self, text = listCoinHoldingsKeys[key])
+            self.headingTableLabel = tk.Label(self.frameUserCoinHoldingsTable, text = listCoinHoldingsKeys[key])
             self.headingTableLabel.grid(row = 0, column = key, padx = 1, pady = 1)
             self.arrHeadingTableLabel.append(listCoinHoldingsKeys[key])
 
@@ -112,7 +112,7 @@ class CoinHoldingsTable(tk.Frame):
             currentRowKeys = userCoinHoldingsJSON[(rowInsert - 1)].keys()
             currentRowKeysList = list(currentRowKeys)
             for coinData in coinIndex.values():
-                self.tableLabel = tk.Label(self, text = coinData)
+                self.tableLabel = tk.Label(self.frameUserCoinHoldingsTable, text = coinData)
                 self.tableLabel.grid(row = rowInsert, column = columnInsert, padx = 1, pady = 1)
                 currentRowLabel.append(self.tableLabel)
                 currentRowData.update({currentRowKeysList[columnInsert] : coinData})
