@@ -127,11 +127,17 @@ class CoinHoldingsTable(tk.Frame):
         fileToWriteTo = 'test.json'
         if os.path.isfile(fileToWriteTo) == True:
             with open(fileToWriteTo, 'w') as jsonToWrite:
-                json.dump(self.arrTableData, jsonToWrite)
+                if self.arrTableData != []:
+                    json.dump(self.arrTableData, jsonToWrite)
+                else:
+                    print('arrTableData is empty')
 
         else:
             with open(fileToWriteTo, 'w+') as jsonToWrite:
-                json.dump(self.arrTableData, jsonToWrite)
+                if self.arrTableData != []:
+                    json.dump(self.arrTableData, jsonToWrite)
+                else:
+                    print('arrTableData is empty')
 
     def updateCoinHoldingTableEntry(self, coinToUpdate, fieldToUpdate, updatedData, toSave):
 
@@ -150,8 +156,8 @@ class CoinHoldingsTable(tk.Frame):
                 labelToUpdate.configure(text = uD)
                 break
 
-        #if toSave == True:
-        #    self.saveCoinHoldingsTable()
+        if toSave == True:
+            self.saveCoinHoldingsTable()
 
     def updateCoinHoldingTableCurrentPrices(self, apiToUse):
         coinsToCheck = []
@@ -167,7 +173,7 @@ class CoinHoldingsTable(tk.Frame):
                 self.updateCoinHoldingTableEntry(cTU, 'mostRecentPrice', uD, False)
                 self.updateCoinHoldingTableEntry(cTU, 'mostRecentTime', datetime.now().strftime('%H:%M:%S'), False)
 
-            #self.saveCoinHoldingsTable()
+            self.saveCoinHoldingsTable()
 
 
 def main():
