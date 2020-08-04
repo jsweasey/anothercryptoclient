@@ -94,7 +94,6 @@ class CoinHoldingsTable(tk.Frame):
         coinHoldingsKeys = userCoinHoldingsJSON[0].keys()
         listCoinHoldingsKeys = list(coinHoldingsKeys)
         for key in range(len(listCoinHoldingsKeys)):
-            print(key)
             self.headingTableLabel = tk.Label(self, text = listCoinHoldingsKeys[key])
             self.headingTableLabel.grid(row = 0, column = key, padx = 1, pady = 1)
             self.arrHeadingTableLabel.append(listCoinHoldingsKeys[key])
