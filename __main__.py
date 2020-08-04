@@ -89,22 +89,34 @@ class CoinHoldingsTable(tk.Frame):
 
     def createCoinHoldingsTableHeadings(self):
 
-        with open('test.json','r') as jsonToOpen:
-            userCoinHoldingsJSON = json.load(jsonToOpen)
+        try:
+            with open('test.json','r') as jsonToOpen:
+                userCoinHoldingsJSON = json.load(jsonToOpen)
+        except json.JSONDecodeError:
+            print('JSON file is empty, exiting function')
+            return None
 
-        coinHoldingsKeys = userCoinHoldingsJSON[0].keys()
-        listCoinHoldingsKeys = list(coinHoldingsKeys)
-        for key in range(len(listCoinHoldingsKeys)):
-            self.headingTableLabel = tk.Label(self.frameUserCoinHoldingsTable, text = listCoinHoldingsKeys[key])
-            self.headingTableLabel.grid(row = 0, column = key, padx = 1, pady = 1)
-            self.arrHeadingTableLabel.append(listCoinHoldingsKeys[key])
+        try:
+            coinHoldingsKeys = userCoinHoldingsJSON[0].keys()
+            listCoinHoldingsKeys = list(coinHoldingsKeys)
+            for key in range(len(listCoinHoldingsKeys)):
+                self.headingTableLabel = tk.Label(self.frameUserCoinHoldingsTable, text = listCoinHoldingsKeys[key])
+                self.headingTableLabel.grid(row = 0, column = key, padx = 1, pady = 1)
+                self.arrHeadingTableLabel.append(listCoinHoldingsKeys[key])
+        except IndexError:
+            print('Error with file, no content')
+
 
     def createCoinHoldingsTable(self):
 
         rowInsert = 1
         columnInsert = 0
-        with open('test.json','r') as jsonToOpen:
-            userCoinHoldingsJSON = json.load(jsonToOpen)
+        try:
+            with open('test.json','r') as jsonToOpen:
+                userCoinHoldingsJSON = json.load(jsonToOpen)
+        except json.JSONDecodeError:
+            print('JSON file is empty, exiting function')
+            return None
 
         for coinIndex in (userCoinHoldingsJSON):
             columnInsert = 0
@@ -126,18 +138,26 @@ class CoinHoldingsTable(tk.Frame):
 
         fileToWriteTo = 'test.json'
         if os.path.isfile(fileToWriteTo) == True:
-            with open(fileToWriteTo, 'w') as jsonToWrite:
-                if self.arrTableData != []:
-                    json.dump(self.arrTableData, jsonToWrite)
-                else:
-                    print('arrTableData is empty')
+            try:
+                with open(fileToWriteTo, 'w') as jsonToWrite:
+                    if self.arrTableData != []:
+                        json.dump(self.arrTableData, jsonToWrite)
+                    else:
+                        print('arrTableData is empty')
+            except json.JSONDecodeError:
+                print('JSON file is empty, exiting function')
+                return None
 
         else:
-            with open(fileToWriteTo, 'w+') as jsonToWrite:
-                if self.arrTableData != []:
-                    json.dump(self.arrTableData, jsonToWrite)
-                else:
-                    print('arrTableData is empty')
+            try:
+                with open(fileToWriteTo, 'w+') as jsonToWrite:
+                    if self.arrTableData != []:
+                        json.dump(self.arrTableData, jsonToWrite)
+                    else:
+                        print('arrTableData is empty')
+            except json.JSONDecodeError:
+                print('JSON file is empty, exiting function')
+                return None
 
     def updateCoinHoldingTableEntry(self, coinToUpdate, fieldToUpdate, updatedData, toSave):
 
