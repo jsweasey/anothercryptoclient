@@ -15,6 +15,7 @@ class MainApp():
         self.master = master
         self.frameSecPrices = tk.Frame(self.master, borderwidth = 2, relief = 'sunken')
         self.frameApiConnectCheck = tk.Frame(self.master, borderwidth = 2, relief = 'sunken', padx = 300, pady = 10)
+        self.frameCoinHoldings = tk.Frame(self.master, borderwidth = 2, relief = 'sunken')
 
         self.labelUpdateTime = tk.Label(self.frameSecPrices, text = '')
         self.labelcoingeckoApiGet = tk.Label(self.frameSecPrices, text = '')
@@ -22,8 +23,9 @@ class MainApp():
         self.labelbinanceApiCheck = tk.Label(self.frameApiConnectCheck, text = '')
 
 
-        self.frameSecPrices.pack(side = 'left')
-        self.frameApiConnectCheck.pack(side = 'left')
+        self.frameSecPrices.grid(row = 0, column = 0)
+        self.frameApiConnectCheck.grid(row = 0, column = 1)
+        self.frameCoinHoldings.grid(row = 1, column = 1)
 
         self.labelUpdateTime.pack()
         self.labelcoingeckoApiGet.pack()
@@ -32,13 +34,8 @@ class MainApp():
 
         self.btcPriceSec()
         self.apiCheckSec()
-        currentPortfolio = CoinHoldingsTable()
-        currentPortfolio.createCoinHoldingsTableHeadings()
-        currentPortfolio.createCoinHoldingsTable()
-        currentPortfolio.pack(side = 'bottom')
-        currentPortfolio.saveCoinHoldingsTable()
-        currentPortfolio.updateCoinHoldingTableCurrentPrices('coingecko')
-        #currentPortfolio.updateCoinHoldingTableEntry('bitcoin', 'amount', 1)
+        self.currentPortfolio = CoinHoldingsTable(self.frameCoinHoldings)
+        self.currentPortfolio.pack()
 
     def btcPriceSec(self):
         currentBtcPriceUSDJSON =  api_service.coingeckoApiGet('/simple/price', 'JSON', {'ids':'bitcoin','vs_currencies':'usd'})
@@ -67,12 +64,27 @@ class MainApp():
 
 class CoinHoldingsTable(tk.Frame):
 
-    def __init__(self):
-        super(CoinHoldingsTable, self).__init__()
-        self.frameUserCoinHoldings = tk.Frame(self, borderwidth = 2, relief = 'sunken')
+    def __init__(self, master):
+        tk.Frame.__init__(self, master)
+        self.master = master
+
         self.arrHeadingTableLabel = []
         self.arrTableLabel = []
         self.arrTableData = []
+        self.currentTableDisplayed = 'test.json'
+
+        self.frameUserCoinHoldingsTable = tk.Frame(self.master, borderwidth = 2, relief = 'sunken', bg = 'blue')
+        self.labelCurrentTableDisplayed = tk.Label(self.master, borderwidth = 2, relief = 'sunken')
+
+        self.labelCurrentTableDisplayed.configure(text = self.currentTableDisplayed)
+
+        self.createCoinHoldingsTableHeadings()
+        self.createCoinHoldingsTable()
+        self.updateCoinHoldingTableCurrentPrices('coingecko')
+
+        self.labelCurrentTableDisplayed.pack()
+        self.frameUserCoinHoldingsTable.pack()
+        self.pack()
 
     def createCoinHoldingsTableHeadings(self):
 
