@@ -77,6 +77,7 @@ class CoinHoldingsTable(tk.Frame):
         self.buttonUpdateTablePrices = tk.Button(self.master, borderwidth = 2)
 
         self.labelCurrentTableDisplayed.configure(text = self.currentTableDisplayed)
+        self.buttonUpdateTablePrices.configure(text = 'Update Current Prices', command = (lambda : self.updateCoinHoldingTableCurrentPrices('coingecko')))
 
         self.createCoinHoldingsTableHeadings()
         self.createCoinHoldingsTable()
