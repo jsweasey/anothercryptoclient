@@ -95,12 +95,7 @@ class CoinHoldingsTable(tk.Frame):
 
     def createCoinHoldingsTableHeadings(self):
 
-        try:
-            with open('test.json','r') as jsonToOpen:
-                userCoinHoldingsJSON = json.load(jsonToOpen)
-        except json.JSONDecodeError:
-            print('JSON file is empty, exiting function')
-            return None
+        userCoinHoldingsJSON = data_service.readJSONFile(globalConfig[0].get('workingPortfolioFile'))
 
         try:
             coinHoldingsKeys = userCoinHoldingsJSON[0].keys()
@@ -118,12 +113,7 @@ class CoinHoldingsTable(tk.Frame):
 
         rowInsert = 1
         columnInsert = 0
-        try:
-            with open('test.json','r') as jsonToOpen:
-                userCoinHoldingsJSON = json.load(jsonToOpen)
-        except json.JSONDecodeError:
-            print('JSON file is empty, exiting function')
-            return None
+        userCoinHoldingsJSON = data_service.readJSONFile(globalConfig[0].get('workingPortfolioFile'))
 
         for coinIndex in (userCoinHoldingsJSON):
             columnInsert = 0
@@ -143,28 +133,8 @@ class CoinHoldingsTable(tk.Frame):
 
     def saveCoinHoldingsTable(self):
 
-        fileToWriteTo = 'test.json'
-        if os.path.isfile(fileToWriteTo) == True:
-            try:
-                with open(fileToWriteTo, 'w') as jsonToWrite:
-                    if self.arrTableData != []:
-                        json.dump(self.arrTableData, jsonToWrite)
-                    else:
-                        print('arrTableData is empty')
-            except json.JSONDecodeError:
-                print('JSON file is empty, exiting function')
-                return None
-
-        else:
-            try:
-                with open(fileToWriteTo, 'w+') as jsonToWrite:
-                    if self.arrTableData != []:
-                        json.dump(self.arrTableData, jsonToWrite)
-                    else:
-                        print('arrTableData is empty')
-            except json.JSONDecodeError:
-                print('JSON file is empty, exiting function')
-                return None
+        fileToWriteTo = (globalConfig[0].get('workingPortfolioFile'))
+        data_service.saveToJSONFile(fileToWriteTo, self.arrTableData)
 
     def updateCoinHoldingTableEntry(self, coinToUpdate, fieldToUpdate, updatedData, toSave):
 
