@@ -5,6 +5,7 @@ import data_service as data_service
 import tkinter as tk
 import time as time
 import os as os
+import re as re
 from datetime import datetime as datetime
 
 
@@ -100,7 +101,8 @@ class CoinHoldingsTable(tk.Frame):
             coinHoldingsKeys = userCoinHoldingsJSON[0].keys()
             listCoinHoldingsKeys = list(coinHoldingsKeys)
             for key in range(len(listCoinHoldingsKeys)):
-                self.headingTableLabel = tk.Label(self.frameUserCoinHoldingsTable, text = listCoinHoldingsKeys[key])
+                headingStr = re.sub(r"(?<=\w)([A-Z])", r" \1", listCoinHoldingsKeys[key]).title()
+                self.headingTableLabel = tk.Label(self.frameUserCoinHoldingsTable, text = headingStr)
                 self.headingTableLabel.grid(row = 0, column = key, padx = 1, pady = 1)
                 self.arrHeadingTableLabel.append(listCoinHoldingsKeys[key])
         except IndexError:
