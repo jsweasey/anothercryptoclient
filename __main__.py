@@ -8,6 +8,11 @@ import os as os
 import re as re
 from datetime import datetime as datetime
 
+global globalConfig
+global configPortfolioFile
+
+with open('config.json', 'r') as jsonConfigFile:
+    globalConfig = json.load(jsonConfigFile)
 
 class MainApp():
 
@@ -71,7 +76,7 @@ class CoinHoldingsTable(tk.Frame):
         self.arrHeadingTableLabel = []
         self.arrTableLabel = []
         self.arrTableData = []
-        self.currentTableDisplayed = 'test.json'
+        self.currentTableDisplayed = globalConfig[0].get('workingPortfolioFile')
 
         self.frameUserCoinHoldingsTable = tk.Frame(self.master, borderwidth = 2, relief = 'sunken')
         self.labelCurrentTableDisplayed = tk.Label(self.master, borderwidth = 2, relief = 'sunken')
