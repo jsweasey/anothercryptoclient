@@ -173,7 +173,85 @@ class CoinHoldingsTable(tk.Frame):
             self.saveCoinHoldingsTable()
 
 
+class Coin():
+
+    coinDict = {}
+
+    @classmethod
+    def totalCoins(cls):
+        return len(Coin.coinDict)
+
+    @classmethod
+    def listCoins(cls):
+        return Coin.coinDict
+
+    @classmethod
+    def initializeCoins(cls, fileLocation):
+        coinsDataJSON = data_service.readJSONFile(fileLocation)
+        for i in range(len(coinsDataJSON)):
+            Coin.coinDict.update({(coinsDataJSON[i]['name']):(Coin(coinsDataJSON[i]['name']))})
+
+    @classmethod
+    def addCoin(cls, coinName):
+        if Coin.coinDict.get(coinName, False) == False:
+            Coin.coinDict.update({(coinName):(Coin(coinName))})
+
+
+    def __init__(self, name):
+        self.name = name
+        coinFoundInJSON = False
+        portfolioJSONData = data_service.readJSONFile('test')
+        for currentCoinIndex in range(len(portfolioJSONData)):
+            if portfolioJSONData[currentCoinIndex]['name'] == self.name:
+                self.ticker = portfolioJSONData[currentCoinIndex]['ticker']
+                self.amount = portfolioJSONData[currentCoinIndex]['amount']
+                self.boughtAtPrice = portfolioJSONData[currentCoinIndex]['boughtAtPrice']
+                self.boughtAtTime = portfolioJSONData[currentCoinIndex]['boughtAtTime']
+                self.currencyBoughtIn = portfolioJSONData[currentCoinIndex]['currencyBoughtIn']
+                self.mostRecentPrice = portfolioJSONData[currentCoinIndex]['mostRecentPrice']
+                self.mostRecentTime = portfolioJSONData[currentCoinIndex]['mostRecentTime']
+                coinFoundInJSON = True
+                break
+
+        if coinFoundInJSON == False:
+            self.ticker = '-'
+            self.amount = '0'
+            self.boughtAtPrice = '0'
+            self.boughtAtTime = '-'
+            self.currencyBoughtIn = '-'
+            self.mostRecentPrice = '0'
+            self.mostRecentTime = '-'
+
+        self.isDeleted = False
+
+
+    def changeInPriceAbsolute(self):
+        priceChange = (self.currentPrice - self.boughtAtPrice)
+        return priceChange
+
+    def changeInPricePercentage(self, returnType):
+        priceChange = (self.currentPrice - self.boughtAtPrice)
+        percentageChange = (((priceChange/currentPrice)*100)-100)
+        percentageChangeStr = percentageChange.str() + '%'
+        if returnType == 'str':
+            return percentageChangeStr
+        elif returnType == 'int':
+            return percentageChange
+        else:
+            return 'Invalid returnType'
+
+    def delSelf(self):
+        Coin.coinDict.pop(self.name)
+        self.isDeleted = True
+
+    #use this as main storage in program itself
+    #use sqlite for database
+    #make class methods for storage and organization of each Coin instance
+
+
+
 def main():
+    Coin.initializeCoins(globalConfig[0].get('workingPortfolioFile'))
     root = tk.Tk()
     MainApp(root)
     root.tk.mainloop()
