@@ -196,6 +196,14 @@ class Coin():
         if Coin.coinDict.get(coinName, False) == False:
             Coin.coinDict.update({(coinName):(Coin(coinName))})
 
+    @classmethod
+    def updateCoinPrices(cls, apiToUse):
+        coinsToCheck = []
+        updatePriceJSON = api_service.coingeckoApiGet('/simple/price', 'JSON', {'ids':coinsToSend,'vs_currencies':'usd'})
+        for key in updatePriceJSON:
+            coinsToCheck.append(key)
+
+
 
     def __init__(self, name):
         self.name = name
