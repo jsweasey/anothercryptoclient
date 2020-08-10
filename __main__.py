@@ -197,7 +197,11 @@ class Coin():
     @classmethod
     def currentCoinFields(cls): #ADD FIELD CHOOSING FUNCTIONALITY (E.G REMOVE ONLY isDeleted OR OTHER ATTRIBUTES)
         fieldsToRetun = list(Coin.coinDict[(list(Coin.coinDict.keys())[0])].__dict__)
-        fieldsToRetun.remove('isDeleted')
+        print(fieldsToRetun)
+        try:
+            fieldsToRetun.remove('isDeleted')
+        except:
+            pass
         return fieldsToRetun
 
     #@classmethod
@@ -233,7 +237,10 @@ class Coin():
 
     def dataDict(self):
         returnDict = self.__dict__
-        returnDict.pop('isDeleted')
+        try:
+            returnDict.pop('isDeleted')
+        except:
+            pass
         return returnDict
 
     def changeInPriceAbsolute(self):
