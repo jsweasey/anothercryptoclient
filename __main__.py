@@ -85,7 +85,7 @@ class CoinHoldingsTable(tk.Frame):
 
         self.labelCurrentTableDisplayed.configure(text = self.currentTableDisplayed)
         self.buttonUpdateTablePrices.configure(text = 'Update Current Prices', command = lambda: (self.updateCoinHoldingTableCurrentPrices()))
-        self.buttonAddTestCoin.configure(text = 'Add Test Coin', command = lambda: (self.addNewCoin('egg')))
+        self.buttonAddTestCoin.configure(text = 'Add New Coin', command = lambda: (self.addNewCoinForm()))
 
         self.createCoinHoldingsTable()
         self.updateCoinHoldingTableCurrentPrices()
@@ -165,9 +165,55 @@ class CoinHoldingsTable(tk.Frame):
 
         self.saveCoinHoldingsTable()
 
-    def addNewCoin(self, coinName):
-        Coin.addCoin(coinName)
-        self.createCoinHoldingsTable()
+    def addNewCoinForm(self): #ADD INPUT CHECKING
+        def addNewCoin():
+            updatedDataDict = {}
+            name = entryNCWName.get()
+            ticker = entryNCWTicker.get()
+            amount = entryNCWAmount.get()
+            currency = entryNCWCurrency.get()
+            price = entryNCWPrice.get()
+            time = entryNCWTime.get()
+
+            Coin.addCoin(entryNCWName.get())
+            updatedDataDict.update({'ticker':ticker,'amount':amount,'currencyBoughtIn':currency,'boughtAtPrice':price,'boughtAtTime':time})
+            Coin.coinDict[name].updateFields(updatedDataDict)
+            self.createCoinHoldingsTable()
+            newCoinWindow.destroy()
+
+        newCoinWindow = tk.Toplevel()
+
+        labelNCWName = tk.Label(newCoinWindow, text = 'Name')
+        labelNCWTicker = tk.Label(newCoinWindow, text = 'Ticker')
+        labelNCWAmount = tk.Label(newCoinWindow, text = 'Amount')
+        labelNCWCurrency = tk.Label(newCoinWindow, text = 'Currency')
+        labelNCWPrice = tk.Label(newCoinWindow, text = 'Price')
+        labelNCWTime = tk.Label(newCoinWindow, text = 'Time')
+
+        entryNCWName = tk.Entry(newCoinWindow)
+        entryNCWTicker = tk.Entry(newCoinWindow)
+        entryNCWAmount = tk.Entry(newCoinWindow)
+        entryNCWCurrency = tk.Entry(newCoinWindow)
+        entryNCWPrice = tk.Entry(newCoinWindow)
+        entryNCWTime = tk.Entry(newCoinWindow)
+
+        labelNCWName.grid(row = 0, column = 0)
+        labelNCWTicker.grid(row = 1, column = 0)
+        labelNCWAmount.grid(row = 2, column = 0)
+        labelNCWCurrency.grid(row = 3, column = 0)
+        labelNCWPrice.grid(row = 4, column = 0)
+        labelNCWTime.grid(row = 5, column = 0)
+
+        entryNCWName.grid(row = 0, column = 1)
+        entryNCWTicker.grid(row = 1, column = 1)
+        entryNCWAmount.grid(row = 2, column = 1)
+        entryNCWCurrency.grid(row = 3, column = 1)
+        entryNCWPrice.grid(row = 4, column = 1)
+        entryNCWTime.grid(row = 5, column = 1)
+
+        buttonNCWSendData = tk.Button(newCoinWindow, text='Add Coin', command = lambda: addNewCoin()).grid(row = 6, column = 1)
+
+
 
 class Coin():
 
@@ -251,6 +297,13 @@ class Coin():
         except:
             pass
         return returnDict
+
+    def updateFields(self, updatedDataDict):
+        self.ticker = updatedDataDict.get('ticker')
+        self.amount = updatedDataDict.get('amount')
+        self.boughtAtPrice = updatedDataDict.get('boughtAtPrice')
+        self.boughtAtTime = updatedDataDict.get('boughtAtTime')
+        self.currencyBoughtIn = updatedDataDict.get('currencyBoughtIn')
 
     def changeInPriceAbsolute(self):
         priceChange = (self.currentPrice - self.boughtAtPrice)
