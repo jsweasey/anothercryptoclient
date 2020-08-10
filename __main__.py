@@ -40,7 +40,7 @@ class MainApp():
 
         self.btcPriceSec()
         self.apiCheckSec()
-        self.currentPortfolio = CoinHoldingsTable(self.frameCoinHoldings)
+        currentPortfolio = CoinHoldingsTable(self.frameCoinHoldings)
 
     def btcPriceSec(self):
         currentBtcPriceUSDJSON =  api_service.coingeckoApiGet('/simple/price', 'JSON', {'ids':'bitcoin','vs_currencies':'usd'})
@@ -81,16 +81,20 @@ class CoinHoldingsTable(tk.Frame):
         self.frameUserCoinHoldingsTable = tk.Frame(self.master, borderwidth = 2, relief = 'sunken')
         self.labelCurrentTableDisplayed = tk.Label(self.master, borderwidth = 2, relief = 'sunken')
         self.buttonUpdateTablePrices = tk.Button(self.master, borderwidth = 2)
+        self.buttonAddTestCoin = tk.Button(self.master, borderwidth = 2)
 
         self.labelCurrentTableDisplayed.configure(text = self.currentTableDisplayed)
         self.buttonUpdateTablePrices.configure(text = 'Update Current Prices', command = lambda: (self.updateCoinHoldingTableCurrentPrices()))
+        self.buttonAddTestCoin.configure(text = 'Add Test Coin', command = lambda: (self.addNewCoin('egg')))
 
-        self.createCoinHoldingsTableHeadings()
         self.createCoinHoldingsTable()
         self.updateCoinHoldingTableCurrentPrices()
 
         self.labelCurrentTableDisplayed.grid(row = 0, column = 0)
+
         self.buttonUpdateTablePrices.grid(row = 0, column = 1)
+        self.buttonAddTestCoin.grid(row = 0, column = 2)
+
         self.frameUserCoinHoldingsTable.grid(row = 1, column = 0, columnspan = 2)
 
     def createCoinHoldingsTableHeadings(self):
@@ -104,6 +108,8 @@ class CoinHoldingsTable(tk.Frame):
 
 
     def createCoinHoldingsTable(self):
+
+        self.createCoinHoldingsTableHeadings()
 
         rowInsert = 1
         columnInsert = 0
@@ -159,6 +165,9 @@ class CoinHoldingsTable(tk.Frame):
 
         self.saveCoinHoldingsTable()
 
+    def addNewCoin(self, coinName):
+        Coin.addCoin(coinName)
+        self.createCoinHoldingsTable()
 
 class Coin():
 
@@ -274,6 +283,7 @@ class Coin():
 def main():
     Coin.initializeCoins(globalConfig[0].get('workingPortfolioFile'))
     root = tk.Tk()
+    MainAppInstance = MainApp(root)
     MainApp(root)
     root.tk.mainloop()
 
