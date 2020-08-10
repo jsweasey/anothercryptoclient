@@ -83,45 +83,38 @@ class CoinHoldingsTable(tk.Frame):
         self.buttonUpdateTablePrices = tk.Button(self.master, borderwidth = 2)
 
         self.labelCurrentTableDisplayed.configure(text = self.currentTableDisplayed)
-        self.buttonUpdateTablePrices.configure(text = 'Update Current Prices', command = (lambda : self.updateCoinHoldingTableCurrentPrices('coingecko')))
+        self.buttonUpdateTablePrices.configure(text = 'Update Current Prices', command = lambda: (self.updateCoinHoldingTableCurrentPrices()))
 
         self.createCoinHoldingsTableHeadings()
         self.createCoinHoldingsTable()
-        self.updateCoinHoldingTableCurrentPrices('coingecko')
+        self.updateCoinHoldingTableCurrentPrices()
 
         self.labelCurrentTableDisplayed.grid(row = 0, column = 0)
         self.buttonUpdateTablePrices.grid(row = 0, column = 1)
         self.frameUserCoinHoldingsTable.grid(row = 1, column = 0, columnspan = 2)
 
     def createCoinHoldingsTableHeadings(self):
-
-        userCoinHoldingsJSON = data_service.readJSONFile(globalConfig[0].get('workingPortfolioFile'))
-
-        try:
-            coinHoldingsKeys = userCoinHoldingsJSON[0].keys()
-            listCoinHoldingsKeys = list(coinHoldingsKeys)
-            for key in range(len(listCoinHoldingsKeys)):
-                headingStr = re.sub(r"(?<=\w)([A-Z])", r" \1", listCoinHoldingsKeys[key]).title()
-                self.headingTableLabel = tk.Label(self.frameUserCoinHoldingsTable, text = headingStr)
-                self.headingTableLabel.grid(row = 0, column = key, padx = 1, pady = 1)
-                self.arrHeadingTableLabel.append(listCoinHoldingsKeys[key])
-        except IndexError:
-            print('Error with file, no content')
+        coinHoldingsKeys = Coin.currentCoinFields()
+        listCoinHoldingsKeys = list(coinHoldingsKeys)
+        for key in range(len(listCoinHoldingsKeys)):
+            headingStr = re.sub(r"(?<=\w)([A-Z])", r" \1", listCoinHoldingsKeys[key]).title()
+            self.headingTableLabel = tk.Label(self.frameUserCoinHoldingsTable, text = headingStr)
+            self.headingTableLabel.grid(row = 0, column = key, padx = 1, pady = 1)
+            self.arrHeadingTableLabel.append(listCoinHoldingsKeys[key])
 
 
     def createCoinHoldingsTable(self):
 
         rowInsert = 1
         columnInsert = 0
-        userCoinHoldingsJSON = data_service.readJSONFile(globalConfig[0].get('workingPortfolioFile'))
 
-        for coinIndex in (userCoinHoldingsJSON):
+        for keyIndex in Coin.coinDict:
             columnInsert = 0
             currentRowLabel = []
             currentRowData = {}
-            currentRowKeys = userCoinHoldingsJSON[(rowInsert - 1)].keys()
-            currentRowKeysList = list(currentRowKeys)
-            for coinData in coinIndex.values():
+            currentCoinDict = Coin.coinDict[keyIndex].dataDict()
+            currentRowKeysList = list(currentCoinDict.keys())
+            for coinData in currentCoinDict.values():
                 self.tableLabel = tk.Label(self.frameUserCoinHoldingsTable, text = coinData)
                 self.tableLabel.grid(row = rowInsert, column = columnInsert, padx = 1, pady = 1)
                 currentRowLabel.append(self.tableLabel)
@@ -141,7 +134,6 @@ class CoinHoldingsTable(tk.Frame):
         cTU = coinToUpdate
         fTU = fieldToUpdate
         uD = updatedData
-
         for i in range(len(self.arrTableData)):
             if self.arrTableData[i]['name'] == cTU:
                 self.arrTableData[i].update({fTU : uD})
@@ -156,21 +148,16 @@ class CoinHoldingsTable(tk.Frame):
         if toSave == True:
             self.saveCoinHoldingsTable()
 
-    def updateCoinHoldingTableCurrentPrices(self, apiToUse):
-        coinsToCheck = []
-        for i in range(len(self.arrTableData)):
-            coinsToCheck.append(self.arrTableData[i]['name'])
-        coinsToSend = ','.join(coinsToCheck)
-        if apiToUse == 'coingecko':
-            uDJSON = api_service.coingeckoApiGet('/simple/price', 'JSON', {'ids':coinsToSend,'vs_currencies':'usd'})
-            for i in range(len(self.arrTableData)):
-                cTU = self.arrTableData[i]['name']
-                uDDict = uDJSON.get(cTU)
-                uD = uDDict['usd']
-                self.updateCoinHoldingTableEntry(cTU, 'mostRecentPrice', uD, False)
-                self.updateCoinHoldingTableEntry(cTU, 'mostRecentTime', datetime.now().strftime('%H:%M:%S'), False)
+    def updateCoinHoldingTableCurrentPrices(self):
+        print('updating price')
+        Coin.updateCoinPrices('coingecko')
+        keyList = list(Coin.coinDict.keys())
+        for keyIndex in range(Coin.totalCoins()):
+            key = keyList[keyIndex]
+            self.updateCoinHoldingTableEntry(Coin.coinDict[key].name, 'mostRecentPrice', Coin.coinDict[key].mostRecentPrice, False)
+            self.updateCoinHoldingTableEntry(Coin.coinDict[key].name, 'mostRecentTime', Coin.coinDict[key].mostRecentTime, False)
 
-            self.saveCoinHoldingsTable()
+        self.saveCoinHoldingsTable()
 
 
 class Coin():
@@ -182,7 +169,7 @@ class Coin():
         return len(Coin.coinDict)
 
     @classmethod
-    def listCoins(cls):
+    def listCoinClasses(cls):
         return Coin.coinDict
 
     @classmethod
@@ -198,17 +185,29 @@ class Coin():
 
     @classmethod
     def updateCoinPrices(cls, apiToUse):
-        coinsToCheck = []
-        updatePriceJSON = api_service.coingeckoApiGet('/simple/price', 'JSON', {'ids':coinsToSend,'vs_currencies':'usd'})
-        for key in updatePriceJSON:
-            coinsToCheck.append(key)
+        coinsToCheckList = []
+        for key in Coin.coinDict.keys():
+            coinsToCheckList.append(key)
+        coinsToCheckStr = ','.join(coinsToCheckList)
+        updatePriceJSON = api_service.coingeckoApiGet('/simple/price', 'JSON', {'ids':coinsToCheckStr,'vs_currencies':'usd'})
+        for key in Coin.coinDict.keys():
+            Coin.coinDict[key].mostRecentPrice = updatePriceJSON.get(key).get('usd')
+            Coin.coinDict[key].mostRecentTime = datetime.now().strftime('%H:%M:%S')
 
+    @classmethod
+    def currentCoinFields(cls): #ADD FIELD CHOOSING FUNCTIONALITY (E.G REMOVE ONLY isDeleted OR OTHER ATTRIBUTES)
+        fieldsToRetun = list(Coin.coinDict[(list(Coin.coinDict.keys())[0])].__dict__)
+        fieldsToRetun.remove('isDeleted')
+        return fieldsToRetun
+
+    #@classmethod
+    #def coinData(cls):
 
 
     def __init__(self, name):
         self.name = name
         coinFoundInJSON = False
-        portfolioJSONData = data_service.readJSONFile('test')
+        portfolioJSONData = data_service.readJSONFile(globalConfig[0].get('workingPortfolioFile'))
         for currentCoinIndex in range(len(portfolioJSONData)):
             if portfolioJSONData[currentCoinIndex]['name'] == self.name:
                 self.ticker = portfolioJSONData[currentCoinIndex]['ticker']
@@ -232,6 +231,10 @@ class Coin():
 
         self.isDeleted = False
 
+    def dataDict(self):
+        returnDict = self.__dict__
+        returnDict.pop('isDeleted')
+        return returnDict
 
     def changeInPriceAbsolute(self):
         priceChange = (self.currentPrice - self.boughtAtPrice)
@@ -251,6 +254,9 @@ class Coin():
     def delSelf(self):
         Coin.coinDict.pop(self.name)
         self.isDeleted = True
+
+
+
 
     #use this as main storage in program itself
     #use sqlite for database
