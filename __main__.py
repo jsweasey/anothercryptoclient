@@ -219,6 +219,7 @@ class CoinHoldingsTable(tk.Frame):
                 if self.coinHasBeenChecked == True:
                     Coin.addCoin(entryNCWName.get())
                     updatedDataDict.update({'ticker':ticker,'amount':amount,'currencyBoughtIn':currency,'boughtAtPrice':price,'boughtAtTime':time})
+                    updatedDataDict.clear()
                     Coin.coinDict[name].updateFields(updatedDataDict)
                     self.createCoinHoldingsTable()
                     Coin.saveCoins()
@@ -228,6 +229,7 @@ class CoinHoldingsTable(tk.Frame):
                     if messagebox.askyesno("Warning","Coin: " + name + " has not been checked against Coingecko database, proceed?"):
                         newCoinWindow.lift()
                         Coin.addCoin(entryNCWName.get())
+                        updatedDataDict.clear()
                         updatedDataDict.update({'ticker':ticker,'amount':amount,'currencyBoughtIn':currency,'boughtAtPrice':price,'boughtAtTime':time})
                         Coin.coinDict[name].updateFields(updatedDataDict)
                         self.createCoinHoldingsTable()
