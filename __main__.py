@@ -103,7 +103,7 @@ class CoinHoldingsTable(tk.Frame):
         self.frameUserCoinHoldingsTable.grid(row = 1, column = 0, columnspan = 2)
 
     def createCoinHoldingsTableHeadings(self):
-        coinHoldingsKeys = Coin.currentCoinFields()
+        coinHoldingsKeys = Coin.currentCoinFields(False)
         listCoinHoldingsKeys = list(coinHoldingsKeys)
         for key in range(len(listCoinHoldingsKeys)):
             headingStr = re.sub(r"(?<=\w)([A-Z])", r" \1", listCoinHoldingsKeys[key]).title()
@@ -338,14 +338,18 @@ class Coin():
             Coin.coinDict[key].mostRecentTime = datetime.now().strftime('%H:%M:%S')
 
     @classmethod
-    def currentCoinFields(cls): #ADD FIELD CHOOSING FUNCTIONALITY (E.G REMOVE ONLY isDeleted OR OTHER ATTRIBUTES)
+    def currentCoinFields(cls, returnNonDataFields):
         fieldsToRetun = list(Coin.coinDict[(list(Coin.coinDict.keys())[0])].__dict__)
         print(fieldsToRetun)
-        try:
-            fieldsToRetun.remove('isDeleted')
-        except:
-            pass
-        return fieldsToRetun
+        if returnNonDataFields == True:
+            return fieldsToRetun
+        else:
+            try:
+                fieldsToRetun.remove('isDeleted')
+                fieldsToRetun.remove('inExchange')
+            except:
+                pass
+            return fieldsToRetun
 
     #@classmethod
     #def coinData(cls):
