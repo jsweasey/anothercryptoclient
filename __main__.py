@@ -218,8 +218,8 @@ class CoinHoldingsTable(tk.Frame):
             if (coinAlreadyExist == False) and (emptyFields == False) and (fieldTypeIncorrect == False):
                 if self.coinHasBeenChecked == True:
                     Coin.addCoin(entryNCWName.get())
-                    updatedDataDict.update({'ticker':ticker,'amount':amount,'currencyBoughtIn':currency,'boughtAtPrice':price,'boughtAtTime':time})
                     updatedDataDict.clear()
+                    updatedDataDict.update({'ticker':ticker,'amount':amount,'currencyBoughtIn':currency,'boughtAtPrice':price,'boughtAtTime':time,'inExchange':'True'})
                     Coin.coinDict[name].updateFields(updatedDataDict)
                     self.createCoinHoldingsTable()
                     Coin.saveCoins()
@@ -371,6 +371,7 @@ class Coin():
                 self.currencyBoughtIn = portfolioJSONData[currentCoinIndex]['currencyBoughtIn']
                 self.mostRecentPrice = portfolioJSONData[currentCoinIndex]['mostRecentPrice']
                 self.mostRecentTime = portfolioJSONData[currentCoinIndex]['mostRecentTime']
+                self.inExchange = portfolioJSONData[currentCoinIndex]['inExchange']
                 coinFoundInJSON = True
                 break
 
@@ -382,6 +383,7 @@ class Coin():
             self.currencyBoughtIn = '-'
             self.mostRecentPrice = '0'
             self.mostRecentTime = '-'
+            self.inExchange = "False"
 
         self.isDeleted = False
 
@@ -392,6 +394,7 @@ class Coin():
         else:
             try:
                 returnDict.pop('isDeleted')
+                returnDict.pop('inExchange')
             except:
                 pass
             return returnDict
@@ -402,6 +405,7 @@ class Coin():
         self.boughtAtPrice = updatedDataDict.get('boughtAtPrice')
         self.boughtAtTime = updatedDataDict.get('boughtAtTime')
         self.currencyBoughtIn = updatedDataDict.get('currencyBoughtIn')
+        self.inExchange = updatedDataDict.get('inExchange')
 
     def changeInPriceAbsolute(self):
         priceChange = (self.currentPrice - self.boughtAtPrice)
