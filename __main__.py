@@ -203,8 +203,6 @@ class CoinHoldingsTable(tk.Frame):
                 if Coin.coinDict[keyToCheck].ticker == ticker:
                     coinAlreadyExist = True
 
-            print(self.coinHasBeenChecked)
-
             try:
                 if name != self.checkedName:
                     self.coinHasBeenChecked = False
@@ -216,8 +214,6 @@ class CoinHoldingsTable(tk.Frame):
                     self.coinHasBeenChecked = False
             except:
                 self.coinHasBeenChecked = False
-
-            print(self.coinHasBeenChecked)
 
             if (coinAlreadyExist == False) and (emptyFields == False) and (fieldTypeIncorrect == False):
                 if self.coinHasBeenChecked == True:
@@ -262,7 +258,6 @@ class CoinHoldingsTable(tk.Frame):
             else:
                 labelNCVInfo.configure(text = 'Coin: ' + name + ' does not exist on Coingecko!')
                 self.coinHasBeenChecked = False
-            print(self.coinHasBeenChecked)
 
         newCoinWindow = tk.Toplevel()
         omCurrency = tk.StringVar(self)
@@ -340,7 +335,6 @@ class Coin():
     @classmethod
     def currentCoinFields(cls, returnNonDataFields):
         fieldsToRetun = list(Coin.coinDict[(list(Coin.coinDict.keys())[0])].__dict__)
-        print(fieldsToRetun)
         if returnNonDataFields == True:
             return fieldsToRetun
         else:
