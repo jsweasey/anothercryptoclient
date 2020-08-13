@@ -334,7 +334,7 @@ class Coin():
 
     @classmethod
     def currentCoinFields(cls, returnNonDataFields):
-        fieldsToRetun = list(Coin.coinDict[(list(Coin.coinDict.keys())[0])].__dict__)
+        fieldsToRetun = list(vars(Coin.coinDict[(list(Coin.coinDict.keys())[0])]))
         if returnNonDataFields == True:
             return fieldsToRetun
         else:
@@ -384,12 +384,12 @@ class Coin():
         self.isDeleted = False
 
     def dataDict(self):
-        returnDict = self.__dict__
         try:
             returnDict.pop('isDeleted')
         except:
             pass
         return returnDict
+        returnDict = vars(self).copy()
 
     def updateFields(self, updatedDataDict):
         self.ticker = updatedDataDict.get('ticker')
