@@ -125,8 +125,8 @@ class CoinHoldingsTable(tk.Frame):
             columnInsert = 0
             currentRowLabel = []
             currentRowData = {}
-            currentCoinDict = Coin.coinDict[keyIndex].dataDict()
-            currentRowKeysList = list(currentCoinDict.keys())
+            currentCoinDict = Coin.coinDict[keyIndex].dataDict(False)
+            currentRowKeysList = Coin.currentCoinFields(False)
             for coinData in currentCoinDict.values():
                 self.tableLabel = tk.Label(self.frameUserCoinHoldingsTable, text = coinData)
                 self.tableLabel.grid(row = rowInsert, column = columnInsert, padx = 1, pady = 1)
@@ -137,10 +137,11 @@ class CoinHoldingsTable(tk.Frame):
             self.arrTableData.append(currentRowData)
             rowInsert += 1
 
-    def saveCoinHoldingsTable(self):
-
-        fileToWriteTo = (globalConfig[0].get('workingPortfolioFile'))
-        data_service.saveToJSONFile(fileToWriteTo, self.arrTableData)
+    #def saveCoinHoldingsTable(self):
+    #
+    #    fileToWriteTo = (globalConfig[0].get('workingPortfolioFile'))
+    #    print(self.arrTableData)
+    #    data_service.saveToJSONFile(fileToWriteTo, self.arrTableData)
 
     def updateCoinHoldingTableEntry(self, coinToUpdate, fieldToUpdate, updatedData, toSave):
 
@@ -159,18 +160,17 @@ class CoinHoldingsTable(tk.Frame):
                 break
 
         if toSave == True:
-            self.saveCoinHoldingsTable()
+            Coin.saveCoins()
 
     def updateCoinHoldingTableCurrentPrices(self):
         print('updating price')
         Coin.updateCoinPrices('coingecko')
-        keyList = list(Coin.coinDict.keys())
-        for keyIndex in range(Coin.totalCoins()):
-            key = keyList[keyIndex]
-            self.updateCoinHoldingTableEntry(Coin.coinDict[key].name, 'mostRecentPrice', Coin.coinDict[key].mostRecentPrice, False)
-            self.updateCoinHoldingTableEntry(Coin.coinDict[key].name, 'mostRecentTime', Coin.coinDict[key].mostRecentTime, False)
+        for key in Coin.coinDict.keys():
+            if Coin.coinDict[key].inExchange == 'True':
+                self.updateCoinHoldingTableEntry(Coin.coinDict[key].name, 'mostRecentPrice', Coin.coinDict[key].mostRecentPrice, False)
+                self.updateCoinHoldingTableEntry(Coin.coinDict[key].name, 'mostRecentTime', Coin.coinDict[key].mostRecentTime, False)
 
-        self.saveCoinHoldingsTable()
+        Coin.saveCoins()
 
     def addNewCoinForm(self): #REPLACE WITH tkinter validate
         def addNewCoin():
@@ -225,7 +225,7 @@ class CoinHoldingsTable(tk.Frame):
                     updatedDataDict.update({'ticker':ticker,'amount':amount,'currencyBoughtIn':currency,'boughtAtPrice':price,'boughtAtTime':time})
                     Coin.coinDict[name].updateFields(updatedDataDict)
                     self.createCoinHoldingsTable()
-                    self.saveCoinHoldingsTable()
+                    Coin.saveCoins()
                     labelNCVInfo.configure(text = 'Coin: ' + name + ' added succesfully!')
                     self.coinHasBeenChecked = False
                 else:
@@ -235,7 +235,7 @@ class CoinHoldingsTable(tk.Frame):
                         updatedDataDict.update({'ticker':ticker,'amount':amount,'currencyBoughtIn':currency,'boughtAtPrice':price,'boughtAtTime':time})
                         Coin.coinDict[name].updateFields(updatedDataDict)
                         self.createCoinHoldingsTable()
-                        self.saveCoinHoldingsTable()
+                        Coin.saveCoins()
                         labelNCVInfo.configure(text = 'Coin: ' + name + ' added succesfully!')
                         self.coinHasBeenChecked = False
                     else:
@@ -350,6 +350,13 @@ class Coin():
             except:
                 pass
             return fieldsToRetun
+
+    @classmethod
+    def saveCoins(cls):
+        dataToSave = []
+        for coinToSave in Coin.listCoinClasses():
+            dataToSave.append(Coin.coinDict[coinToSave].dataDict(True))
+        data_service.saveToJSONFile(globalConfig[0].get('workingPortfolioFile'), dataToSave)
 
     #@classmethod
     #def coinData(cls):
