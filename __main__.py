@@ -331,8 +331,9 @@ class Coin():
         coinsToCheckStr = ','.join(coinsToCheckList)
         updatePriceJSON = api_service.coingeckoApiGet('/simple/price', 'JSON', {'ids':coinsToCheckStr,'vs_currencies':'usd'})
         for key in Coin.coinDict.keys():
-            Coin.coinDict[key].mostRecentPrice = updatePriceJSON.get(key).get('usd')
-            Coin.coinDict[key].mostRecentTime = datetime.now().strftime('%H:%M:%S')
+            if Coin.coinDict[key].inExchange == 'True':
+                Coin.coinDict[key].mostRecentPrice = updatePriceJSON.get(key).get('usd')
+                Coin.coinDict[key].mostRecentTime = datetime.now().strftime('%H:%M:%S')
 
     @classmethod
     def currentCoinFields(cls, returnNonDataFields):
