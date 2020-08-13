@@ -383,13 +383,16 @@ class Coin():
 
         self.isDeleted = False
 
-    def dataDict(self):
-        try:
-            returnDict.pop('isDeleted')
-        except:
-            pass
-        return returnDict
+    def dataDict(self, returnNonDataFields):
         returnDict = vars(self).copy()
+        if returnNonDataFields == True:
+            return returnDict
+        else:
+            try:
+                returnDict.pop('isDeleted')
+            except:
+                pass
+            return returnDict
 
     def updateFields(self, updatedDataDict):
         self.ticker = updatedDataDict.get('ticker')
