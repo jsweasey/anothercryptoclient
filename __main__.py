@@ -223,7 +223,7 @@ class CoinHoldingsTable(tk.Frame):
                     Coin.coinDict[name].updateFields(updatedDataDict)
                     self.createCoinHoldingsTable()
                     Coin.saveCoins()
-                    labelNCVInfo.configure(text = 'Coin: ' + name + ' added succesfully!')
+                    labelNCVInfo.configure(text = 'Coin: ' + name + ' added succesfully!', fg = 'green')
                     self.coinHasBeenChecked = False
                 else:
                     if messagebox.askyesno("Warning","Coin: " + name + " has not been checked against Coingecko database, proceed?"):
@@ -234,43 +234,45 @@ class CoinHoldingsTable(tk.Frame):
                         Coin.coinDict[name].updateFields(updatedDataDict)
                         self.createCoinHoldingsTable()
                         Coin.saveCoins()
-                        labelNCVInfo.configure(text = 'Coin: ' + name + ' added succesfully!')
+                        labelNCVInfo.configure(text = 'Coin: ' + name + ' added succesfully!', fg = 'green')
                         self.coinHasBeenChecked = False
                     else:
                         newCoinWindow.lift()
             elif emptyFields == True:
-                labelNCVInfo.configure(text = 'Not all Coin data fields have been filled!')
+                labelNCVInfo.configure(text = 'Not all Coin data fields have been filled!', fg = 'red')
             elif coinAlreadyExist == True:
-                labelNCVInfo.configure(text = 'Coin: ' + name + ' already exists!')
+                labelNCVInfo.configure(text = 'Coin: ' + name + ' already exists!', fg = 'red')
             elif fieldTypeIncorrect == True:
-                labelNCVInfo.configure(text = 'One or more fields have incorrect data types!')
+                labelNCVInfo.configure(text = 'One or more fields have incorrect data types!', fg = 'red')
             else:
-                labelNCVInfo.configure(text = 'Unknown error, please check all fields!')
+                labelNCVInfo.configure(text = 'Unknown error, please check all fields!', fg = 'red')
 
         def checkCoinExists():
             name = entryNCWName.get()
             apiResponse = api_service.coingeckoApiGet('/coins/' + name, 'JSON', {'id':name,'localization':False,'tickers':False,'market_data':False,'community_data':False,'developer_data':False})
             if apiResponse.get('id') == name:
-                labelNCVInfo.configure(text = 'Coin: ' + name + ' exists on Coingecko, added ticker!')
+                labelNCVInfo.configure(text = 'Coin: ' + name + ' exists on Coingecko, added ticker!', fg = 'green')
                 entryNCWTicker.delete(0,tk.END)
                 entryNCWTicker.insert(0,apiResponse.get('symbol'))
                 self.checkedName = name
                 self.checkedTicker = apiResponse.get('symbol')
                 self.coinHasBeenChecked = True
             else:
-                labelNCVInfo.configure(text = 'Coin: ' + name + ' does not exist on Coingecko!')
+                labelNCVInfo.configure(text = 'Coin: ' + name + ' does not exist on Coingecko!', fg = 'red')
                 self.coinHasBeenChecked = False
 
         newCoinWindow = tk.Toplevel()
         omCurrency = tk.StringVar(self)
+        
+        newCoinWindowLength = newCoinWindow.winfo_reqwidth()
 
-        labelNCWName = tk.Label(newCoinWindow, text = 'Name')
-        labelNCWTicker = tk.Label(newCoinWindow, text = 'Ticker')
-        labelNCWAmount = tk.Label(newCoinWindow, text = 'Amount')
-        labelNCWCurrency = tk.Label(newCoinWindow, text = 'Currency')
-        labelNCWPrice = tk.Label(newCoinWindow, text = 'Price')
-        labelNCWTime = tk.Label(newCoinWindow, text = 'Time')
-        labelNCVInfo = tk.Label(newCoinWindow, text = '')
+        labelNCWName = tk.Label(newCoinWindow, text = 'Name:')
+        labelNCWTicker = tk.Label(newCoinWindow, text = 'Ticker:')
+        labelNCWAmount = tk.Label(newCoinWindow, text = 'Amount:')
+        labelNCWCurrency = tk.Label(newCoinWindow, text = 'Currency:')
+        labelNCWPrice = tk.Label(newCoinWindow, text = 'Price:')
+        labelNCWTime = tk.Label(newCoinWindow, text = 'Time:')
+        labelNCVInfo = tk.Label(newCoinWindow, text = '', wraplength = newCoinWindowLength)
 
         entryNCWName = tk.Entry(newCoinWindow)
         entryNCWTicker = tk.Entry(newCoinWindow)
@@ -280,22 +282,22 @@ class CoinHoldingsTable(tk.Frame):
 
         optionmenuNCWCurrnency = tk.OptionMenu(newCoinWindow, omCurrency, 'usd')
 
-        labelNCWName.grid(row = 0, column = 0)
-        labelNCWTicker.grid(row = 1, column = 0)
-        labelNCWAmount.grid(row = 2, column = 0)
-        labelNCWCurrency.grid(row = 3, column = 0)
-        labelNCWPrice.grid(row = 4, column = 0)
-        labelNCWTime.grid(row = 5, column = 0)
-        labelNCVInfo.grid(row = 6, column = 0)
+        labelNCWName.grid(row = 0, column = 0, sticky = 'W')
+        labelNCWTicker.grid(row = 1, column = 0, sticky = 'W')
+        labelNCWAmount.grid(row = 2, column = 0, sticky = 'W')
+        labelNCWCurrency.grid(row = 3, column = 0, sticky = 'W')
+        labelNCWPrice.grid(row = 4, column = 0, sticky = 'W')
+        labelNCWTime.grid(row = 5, column = 0, sticky = 'W')
+        labelNCVInfo.grid(row = 6, column = 0, columnspan = 3, sticky = 'W')
 
         entryNCWName.grid(row = 0, column = 1)
         entryNCWTicker.grid(row = 1, column = 1)
         entryNCWAmount.grid(row = 2, column = 1)
-        optionmenuNCWCurrnency.grid(row = 3, column = 1)
+        optionmenuNCWCurrnency.grid(row = 3, column = 1, sticky = 'E')
         entryNCWPrice.grid(row = 4, column = 1)
         entryNCWTime.grid(row = 5, column = 1)
 
-        buttonNCWSendData = tk.Button(newCoinWindow, text='Add Coin', command = lambda: addNewCoin()).grid(row = 6, column = 1)
+        buttonNCWSendData = tk.Button(newCoinWindow, text='Add Coin', command = lambda: addNewCoin()).grid(row = 5, column = 2)
         buttonNCWCheckCoin = tk.Button(newCoinWindow, text='Check Coin', command = lambda: checkCoinExists()).grid(row = 0, column = 2)
 
 
